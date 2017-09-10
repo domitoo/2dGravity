@@ -2,22 +2,28 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour {
+public class PlayerController : GravityObject {
 
     // Use this for initialization
     public float speed = 4f; //歩くスピード
-    private Rigidbody2D rigidbody2D;
+    //private Rigidbody2D rigidbody2D;
     private Animator anim;
+    public bool isChangeDirection = false;
+    [SerializeField]
+    GameObject pivot;
 
-    void Start()
+
+    public void Start()
     {
+        base.Start();
         //各コンポーネントをキャッシュしておく
         anim = GetComponent<Animator>();
-        rigidbody2D = GetComponent<Rigidbody2D>();
+        
     }
 
-    void FixedUpdate()
+    public void FixedUpdate()
     {
+        base.FixedUpdate();
         //左キー: -1、右キー: 1
         float x = Input.GetAxisRaw("Horizontal");
         //左か右を入力したら
@@ -40,22 +46,14 @@ public class PlayerController : MonoBehaviour {
             //Dash→Wait
             anim.SetBool("Dash", false);
         }
-        
-    }
-    public void ChangeGravity()
-    {
-
-        this.gameObject.GetComponent<Rigidbody2D>().gravityScale = -this.gameObject.GetComponent<Rigidbody2D>().gravityScale;
-        if (this.gameObject.transform.position.y > 0)
+        if (Input.GetButtonDown("Jump"))
         {
-            this.gameObject.transform.position -= new Vector3(0, 0.1f, 0);
+            Gravity.y = -Gravity.y;
+            //gameManager.ChangeGravity();
+            //this.gameObject.transform.Rotate(new Vector3(180, 0, 0));
+            this.gameObject.transform.RotateAround(pivot.transform.position, new Vector3(180, 0, 0), 180f);
         }
-        else
-        { 
-            this.gameObject.transform.position += new Vector3(0, 0.1f, 0);
-        }
-        Vector2 temp = this.gameObject.transform.localScale;
-        temp.y = -temp.y;
-        this.gameObject.transform.localScale = temp;
+
+
     }
 }
